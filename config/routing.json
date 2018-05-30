@@ -1,0 +1,13 @@
+{
+  "/": "ViewsController:getHome",
+  "/api/users":{
+                  "GET":"UsersController:getAll",
+                  "DELETE":"UsersController:deleteAll",
+                  "POST":"UsersController:create"
+                },
+  "/api/users/:id":{
+                    "GET":"UsersController:getById",
+                    "PUT":"UsersController:update",
+                    "DELETE":"UsersController:delete"
+                  }
+}

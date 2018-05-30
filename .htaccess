@@ -1,0 +1,19 @@
+#<IfModule mod_rewrite.c>
+    DirectoryIndex index.php
+#     On suit les liens symboliques
+    Options +FollowSymlinks
+    # Activation du mod rewrite d'Apache
+    RewriteEngine on
+#
+    # Réécriture de index.html vers index.php
+    RewriteRule ^index\.html$ /index.php
+#
+#    RewriteRule api/((?!index\.php$).+)$ api/index.php [L,NC]
+#    RewriteRule ^api/((?!index\.php$).+)$ index.php [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f [OR]
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} $ [NC]
+#    RewriteRule ^ -
+    RewriteRule ^(.+) index.php [L]
+#</IfModule>
+
