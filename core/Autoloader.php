@@ -18,7 +18,7 @@ class Autoloader{
      */
     static function autoload($class){
 
-//        echo $class;
+//        echo $class."<br>";
 
         $pathItems = explode('\\', $class);
 

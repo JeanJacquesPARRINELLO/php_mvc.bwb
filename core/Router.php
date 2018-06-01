@@ -8,7 +8,8 @@
 
 namespace Core;
 
-use Controllers\PagesController;
+use Controllers\ViewsController;
+//use Controllers\UsersController;
 
 class Router
 {
@@ -21,12 +22,13 @@ class Router
     public function index()
     {
         //  RÉCUPÉRATION DES ROUTES ET INIT DE L'ATTRIBUT $routes
-        $this->getRoutesFromConfig();
+        $this->routes = $this->getRoutesFromConfig();
 //        vardump($this->routes);
 
         //  INIT DES ROUTES
         $this->routes = $this->setRoutes($_SERVER['REQUEST_URI']);
 //        vardump($this->routes);
+//        vardump($_SERVER['REQUEST_URI']);
 
 
         //  SUPPRESSION D'UN ÉVENTUEL "/" DE FIN D'URL
@@ -42,7 +44,7 @@ class Router
                 if(array_key_exists($_SERVER["REQUEST_METHOD"], $this->routes[$_SERVER['REQUEST_URI']])){
                     //  RÉCUPÉRATION DU CONTROLEUR ET DE L'ACTION ASSOCIÉE ET EXÉCUTION
                     $ct = explode(':', $this->routes[$_SERVER['REQUEST_URI']][$_SERVER["REQUEST_METHOD"]]);
-                    call_user_func("Controllers\\" . $ct[0] . "::" . $ct[1]);
+//                    call_user_func("Dao\\" . $ct[0] . "::" . $ct[1]);
                 }else{
                     $this->routage("error404");
                 }
@@ -50,8 +52,11 @@ class Router
             }else{
                 //  RÉCUPÉRATION DU CONTROLEUR ET DE L'ACTION ASSOCIÉE ET EXÉCUTION
                 $ct = explode(':', $this->routes[$_SERVER['REQUEST_URI']]);
-                call_user_func("Controllers\\" . $ct[0] . "::" . $ct[1]);
             }
+//            $temp = "Controllers\\" . $ct[0];
+            $temp = $ct[0];
+            $controller = new $temp;
+            $controller->{$ct[1]}();
         }else{
             $this->routage("error404");
         }
@@ -65,7 +70,9 @@ class Router
     private function getRoutesFromConfig()
     {
         $this->fileConfig = file_get_contents(ROOT."config/routing.json");
-        $this->routes = json_decode($this->fileConfig,true);
+//        vardump($this->fileConfig);
+//        vardump(json_decode($this->fileConfig,true));
+        return json_decode($this->fileConfig,true);
     }
 
     /**
@@ -88,8 +95,10 @@ class Router
                 $Key = str_replace(":id", $id, $key);
                 $routes[$Key] = $route;
             }
+//            vardump($routes);
             return $routes;
         }
+//            vardump($this->routes);
         return $this->routes;
     }
 
@@ -97,6 +106,6 @@ class Router
      * @param string $pCible
      */
     private function routage(string $pCible){
-        PagesController::index($pCible);
+        ViewsController::index($pCible);
     }
 }

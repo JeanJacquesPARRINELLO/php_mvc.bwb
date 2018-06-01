@@ -9,10 +9,12 @@
 namespace Dao;
 
 
+use Models\EntityModel;
+
 interface CrudInterface
 {
-    public function retrieve();
-    public function update();
-    public function delete();
-    public function create();
+    public function retrieve(EntityModel $pPointer);
+    public function update(array $pProperties);
+    public function delete(int $pId);
+    public function create(array $pProperties);
 }

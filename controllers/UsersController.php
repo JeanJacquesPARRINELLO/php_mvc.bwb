@@ -8,31 +8,54 @@
 
 namespace Controllers;
 
+use Models\Users;
 
 class UsersController
 {
-    public static function getAll()
-    {
-        echo "public static function getAll dans UsersController";
-    }
-    public static function getById()
-    {
-        echo "public static function getById dans UsersController";
+
+    function getAll(){
+        $aoUser = [];
+        $modelUser = new Users();
+        $aoResult = $modelUser->getAll();
+//        foreach ($aaResult as $tab) {
+//            $user = new Users();
+//            $user->hydrate($tab);
+//            $aoUser[] = $user;
+//        }
+        vardump($aoResult);
     }
 
-    public  static function create(){
-        echo "public static function create dans UsersController";
+    function Create(){
+//        echo 'controller user :: create';
+        $modelUser = new Users();
+        $message = "Création OK";
+        if(isset($_POST['id'])){
+            $modelUser->setId ((int)$_POST['id']);
+            $message = "Update OK";
+        }
+        $modelUser->update();
+        echo $message;
     }
 
-    public  static function delete(){
-        echo "public static function delete dans UsersController";
+    function getById(){
+        $id = explode("/", $_SERVER["REQUEST_URI"]);
+        $id = (int)end($id);
+        $modelUser = new Users();
+        $modelUser->setId($id);
+        $oUser = $modelUser->load();
+        vardump($oUser);
     }
 
-    public  static function update(){
-        echo "public static function update dans UsersController";
+    public function delete(){
+        $id = explode("/", $_SERVER["REQUEST_URI"]);
+        $id = (int)end($id);
+        $modelUser = new Users();
+        $modelUser->setId($id);
+        $oUser = $modelUser->remove();
+        vardump($oUser);
     }
 
-    public  static function deleteAll(){
+    public function deleteAll(){
         echo "public static function deleteAll dans UsersController";
     }
 

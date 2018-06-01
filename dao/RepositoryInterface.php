@@ -8,9 +8,10 @@
 
 namespace Dao;
 
+use Models\EntityModel;
 
 interface RepositoryInterface
 {
-    public function getAll();
-    public function getAllBy(array $pArray);
+    public function getAll(EntityModel $pPointer);
+    public function getAllBy(array $pPropVal);
 }
