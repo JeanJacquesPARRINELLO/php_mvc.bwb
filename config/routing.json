@@ -1,7 +1,9 @@
 {
 
   "/": "Controllers\\ViewsController:getHome",
+  "/view/accueil": "Controllers\\ViewsController:getHome",
   "/view/user/inscription": "Controllers\\ViewsController:signinUser",
+
   "/view/user/update/:id": {
             "GET": "Controllers\\ViewsController:updateUser"
           },

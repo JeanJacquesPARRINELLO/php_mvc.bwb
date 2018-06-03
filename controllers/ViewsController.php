@@ -9,6 +9,9 @@
 namespace Controllers;
 
 use Models\Users;
+use views\Accueil_class;
+use views\DeleteUserConfirmation_class;
+use views\Padviou;
 
 class ViewsController
 {
@@ -17,17 +20,20 @@ class ViewsController
 
         switch ($pCible){
             case("error404"):
-                echo "Vous tentez d'accéder à une ressource non autorisée";
-                break;
+                $view = new Padviou("error404.php");
+                $view->Render();
         }
     }
 
     public static function getHome(){
-        echo "Vous tentez d'accéder à l'accueil";
+        $viou = new Accueil_class("accueil.php");
+        $viou->Render();
     }
 
     public static function signinUser(){
-        require_once ROOT."views/inscriptionForm.php";
+        $view = new Padviou("inscriptionUserForm.php");
+        $view->setTitle("Inscription d'un nouvel utilisateur");
+        $view->Render();
     }
 
     public static function updateUser(){
@@ -36,7 +42,8 @@ class ViewsController
         $modelUser = new Users();
         $modelUser->setId($userIdToModify);
         $oUser = $modelUser->load();
-        require_once ROOT."views/updateUserform.php";
+        $view = new Padviou("updateUserform.php");
+        $view->Render();
     }
 
     public static function deleteUser(){
@@ -45,6 +52,9 @@ class ViewsController
         $modelUser = new Users();
         $modelUser->setId($userIdToModify);
         $oUser = $modelUser->load();
-        require_once ROOT."views/deleteUser.php";
+//        vardump($oUser);
+        $view = new DeleteUserConfirmation_class("deleteUserConfirmation.php");
+        $view->setUser($oUser);
+        $view->Render();
     }
 }

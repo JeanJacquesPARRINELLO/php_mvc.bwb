@@ -9,6 +9,7 @@
 namespace Controllers;
 
 use Models\Users;
+use views\Padviou;
 
 class UsersController
 {
@@ -17,12 +18,10 @@ class UsersController
         $aoUser = [];
         $modelUser = new Users();
         $aoResult = $modelUser->getAll();
-//        foreach ($aaResult as $tab) {
-//            $user = new Users();
-//            $user->hydrate($tab);
-//            $aoUser[] = $user;
-//        }
-        vardump($aoResult);
+
+        $view = new Padviou("inscriptionUserForm.php", "Tous les utilisateur");
+        $view->Render("callback");
+//        vardump($aoResult);
     }
 
     function Create(){
