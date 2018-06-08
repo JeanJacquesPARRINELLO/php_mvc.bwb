@@ -8,53 +8,21 @@
 
 namespace Controllers;
 
-use Models\Users;
-use views\Accueil_class;
-use views\DeleteUserConfirmation_class;
-use views\Padviou;
+use Core\Controller;
+use Core\Response;
 
-class ViewsController
+class ViewsController extends Controller
 {
-
-    public function index($pCible = "accueil"){
-
-        switch ($pCible){
-            case("error404"):
-                $view = new Padviou("error404.php");
-                $view->Render();
-        }
-    }
 
     public static function getHome(){
         $viou = new Accueil_class("accueil.php");
+        $viou->setTitle( "Page d'accueil");
         $viou->Render();
     }
 
-    public static function signinUser(){
-        $view = new Padviou("inscriptionUserForm.php");
-        $view->setTitle("Inscription d'un nouvel utilisateur");
-        $view->Render();
-    }
-
-    public static function updateUser(){
-        $id = explode("/", $_SERVER['REQUEST_URI']);
-        $userIdToModify = end($id);
-        $modelUser = new Users();
-        $modelUser->setId($userIdToModify);
-        $oUser = $modelUser->load();
-        $view = new Padviou("updateUserform.php");
-        $view->Render();
-    }
-
-    public static function deleteUser(){
-        $id = explode("/", $_SERVER['REQUEST_URI']);
-        $userIdToModify = end($id);
-        $modelUser = new Users();
-        $modelUser->setId($userIdToModify);
-        $oUser = $modelUser->load();
-//        vardump($oUser);
-        $view = new DeleteUserConfirmation_class("deleteUserConfirmation.php");
-        $view->setUser($oUser);
+    public function error404(){
+        $view = new Response("error404.php");
+        $view->setTitle( "Page d'erreur 404");
         $view->Render();
     }
 }

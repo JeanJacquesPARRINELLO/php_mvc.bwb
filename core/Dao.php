@@ -6,7 +6,7 @@
  * Time: 11:31
  */
 
-namespace Dao;
+namespace Core;
 
 use Core\DatabaseConnect;
 use Models\EntityModel;
@@ -33,9 +33,18 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @param array $aPropVal
      */
     public function create(array $aPropVal){
-        $requete = $this->insert().$this->keys($aPropVal).$this->values($aPropVal);
-        $req = $this->pdo->prepare($requete);
-        $req->execute($aPropVal);
+        try
+        {
+            $requete = $this->insert().$this->keys($aPropVal).$this->values($aPropVal);
+            $req = $this->pdo->prepare($requete);
+
+            $req->execute($aPropVal);
+            return $req->rowCount();
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
 
     }
 
@@ -44,8 +53,15 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @return mixed
      */
     public function retrieve(EntityModel $oModelEntity){
-        $this->modelObj = $oModelEntity;
-        return $this->getById($this->modelObj->getId());
+        try
+        {
+            $this->modelObj = $oModelEntity;
+            return $this->getById($this->modelObj->getId());
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
 
     }
 
@@ -54,12 +70,18 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @return bool
      */
     public function update(array $aPropVal){
-//        vardump($aPropVal);
-        $requete = $this->updateMysql().$this->set($aPropVal).$this->whereId();
-//        vardump($requete);
-        $req = $this->pdo->prepare($requete);
+        try
+        {
+            $requete = $this->updateMysql().$this->set($aPropVal).$this->whereId();
+            $req = $this->pdo->prepare($requete);
 
-        return $req->execute($aPropVal);
+            $req->execute($aPropVal);
+            return $req->rowCount();
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -67,10 +89,19 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @return bool
      */
     public function delete(int $pId){
-        $requete = "DELETE FROM `" . $this->table . "` WHERE `id`=:id";
-        $req = $this->pdo->prepare($requete);
-        $req->bindValue(":id", $pId, \PDO::PARAM_INT);
-        return $req->execute();
+        try
+        {
+            $requete = "DELETE FROM `" . $this->table . "` WHERE `id`=:id";
+            $req = $this->pdo->prepare($requete);
+            $req->bindValue(":id", $pId, \PDO::PARAM_INT);
+
+            $req->execute();
+            return $req->rowCount();
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -78,18 +109,25 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @return array
      */
     public function getAll(EntityModel $oModelEntity){
-        $this->modelObj = $oModelEntity;
-        $list = [];
-        $req = $this->pdo->query("SELECT * FROM " . $this->table);
-        $req->execute();
+        try
+        {
+            $this->modelObj = $oModelEntity;
+            $list = [];
+            $req = $this->pdo->query("SELECT * FROM " . $this->table);
+            $req->execute();
 
-        foreach($req->fetchAll() as $data){
-            $newEntity = clone $this->modelObj;
-            $newEntity->hydrate($data);
-            $list[] = $newEntity;
+            foreach($req->fetchAll() as $data){
+                $newEntity = clone $this->modelObj;
+                $newEntity->hydrate($data);
+                $list[] = $newEntity;
+            }
+
+            return $list;
         }
-
-        return $list;
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -97,11 +135,18 @@ abstract class Dao implements CrudInterface, RepositoryInterface
      * @return mixed
      */
     public function getById($pId){
-        $requete = "SELECT * FROM " . $this->table . " WHERE id= :id" ;
-        $req = $this->pdo->prepare($requete);
-        $req->bindParam(':id', $pId, \PDO::PARAM_INT);
-        $req->execute();
-        return($req->fetch());
+        try
+        {
+            $requete = "SELECT * FROM " . $this->table . " WHERE id= :id" ;
+            $req = $this->pdo->prepare($requete);
+            $req->bindParam(':id', $pId, \PDO::PARAM_INT);
+            $req->execute();
+            return($req->fetch());
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /*

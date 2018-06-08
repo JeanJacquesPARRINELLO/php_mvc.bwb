@@ -8,6 +8,7 @@
 
 namespace Models;
 
+use Models\EntityModel;
 
 class Users extends EntityModel
 {

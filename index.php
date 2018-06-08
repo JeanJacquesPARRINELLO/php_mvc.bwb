@@ -1,18 +1,19 @@
 <?php
 
 use Core\Autoloader;
-use Core\Kernel;
+use Core\Router;
 
 define("ROOT" , "./");
 
 require_once("./core/Autoloader.php");
 
-Autoloader::register();
-Kernel::getInstance()->main();
+$autoloader = new Autoloader();
+$autoloader->register();
+$router = new Router();
+
+
 
 //phpinfo();
-//vardump($_SERVER['REQUEST_URI']);
-//vardump($_SERVER['REQUEST_METHOD']);
 
 function vardump($pWhat){
     echo "<pre>";

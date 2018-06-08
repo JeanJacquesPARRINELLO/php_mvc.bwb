@@ -8,6 +8,8 @@
 
 namespace Core;
 
+use Exception;
+
 class DatabaseConnect
 {
 //
@@ -19,7 +21,6 @@ class DatabaseConnect
 //      CRÉATION DE L'INSTANCE SI ELLE N'EXISTE PAS
 //      SELF FAIT RÉFÉRENCE À LA CLASSE
         if(!isset(self::$instance)){
-
             $option = array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');
             self::$config = self::getConfig();
 

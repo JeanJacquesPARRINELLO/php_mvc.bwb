@@ -8,7 +8,7 @@
 
 namespace Dao;
 
-use Models\EntityModel;
+use Core\Dao;
 
 class DaoUsers extends Dao
 {

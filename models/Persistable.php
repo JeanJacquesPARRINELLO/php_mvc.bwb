@@ -3,8 +3,9 @@
 namespace Models;
 
 interface Persistable {
-   public function load();
-   public function update();
-   public function remove();
+   public function Create();
+   public function Retrieve();
+   public function Update();
+   public function Delete();
    
 }

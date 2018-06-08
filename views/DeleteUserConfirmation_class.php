@@ -6,10 +6,12 @@
  * Time: 18:38
  */
 
-namespace views;
+namespace Views;
+
+use Core\Response;
 
 
-class DeleteUserConfirmation_class extends Padviou
+class DeleteUserConfirmation_class extends Response
 {
     protected $callback = "callback";
     protected $title = "Suppression d'un profil utilisateur";

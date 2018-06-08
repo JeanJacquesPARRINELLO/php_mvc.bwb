@@ -6,7 +6,7 @@
  * Time: 11:36
  */
 
-namespace Dao;
+namespace Core;
 
 use Models\EntityModel;
 

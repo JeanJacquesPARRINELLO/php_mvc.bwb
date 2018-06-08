@@ -1,18 +1,21 @@
 {
+  "/": "Controllers\\UsersController:displayAllUsers",
 
-  "/": "Controllers\\ViewsController:getHome",
-  "/view/accueil": "Controllers\\ViewsController:getHome",
-  "/view/user/inscription": "Controllers\\ViewsController:signinUser",
+  "/inscription": "Controllers\\UsersController:inscriptionForm",
+  "/create/user": "Controllers\\UsersController:createUserAction",
 
-  "/view/user/update/:id": {
-            "GET": "Controllers\\ViewsController:updateUser"
-          },
-  "/view/user/delete/:id": {
-            "GET": "Controllers\\ViewsController:deleteUser"
-          },
+  "/update/user/:id/form": "Controllers\\UsersController:updateForm",
+  "/update/user/:id": "Controllers\\UsersController:updateUserAction",
+
+  "/delete/user/:id/form": "Controllers\\UsersController:deleteUserForm",
+  "/delete/user/:id": "Controllers\\UsersController:deleteUserAction",
+
+  "/api/users/:id/messages/:id": "Controllers\\ViewsController:produit",
 
 
-  "/api/user/delete/:id": {
+
+
+  "/api/users/delete/:id": {
             "GET": "Controllers\\UsersController:delete"
           },
   "/api/users": {
@@ -20,7 +23,7 @@
             "DELETE":"Controllers\\UsersController:deleteAll",
             "POST":"Controllers\\UsersController:create"
           },
-  "/api/user/:id": {
+  "/api/users/:id": {
             "GET":"Controllers\\UsersController:getById",
             "POST":"Controllers\\UsersController:update"
           }

@@ -6,10 +6,12 @@
  * Time: 18:38
  */
 
-namespace views;
+namespace Views;
+
+use Core\Response;
 
 
-class Accueil_class extends Padviou
+class Accueil_class extends Response
 {
     protected $callback = "callback";
     protected $title = "Accueil du site";

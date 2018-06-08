@@ -15,50 +15,53 @@ class Router
 {
     private $fileConfig;
     private $routes;
+    private $uri;
+
+    public function __construct()
+    {
+        //  SUPPRESSION D'UN ÉVENTUEL "/" DE FIN D'URL
+        if($_SERVER['REQUEST_URI'] !== "/"){
+            $this->uri = rtrim($_SERVER['REQUEST_URI'], '/');
+        }else{
+            $this->uri = $_SERVER['REQUEST_URI'];
+        }
+
+        //  RÉCUPÉRATION DES ROUTES ET INIT DE L'ATTRIBUT $routes
+        $this->routes = $this->getRoutesFromConfig();
+
+        //  INIT DES ROUTES
+        $this->routes = $this->setRoutes($this->uri);
+
+        $this->execute();
+    }
 
     /**
      *  ROUTAGE DE LA REQUÊTE VERS LE CONTROLEUR IDOINE
      */
-    public function index()
+    public function execute()
     {
-        //  RÉCUPÉRATION DES ROUTES ET INIT DE L'ATTRIBUT $routes
-        $this->routes = $this->getRoutesFromConfig();
-//        vardump($this->routes);
-
-        //  INIT DES ROUTES
-        $this->routes = $this->setRoutes($_SERVER['REQUEST_URI']);
-//        vardump($this->routes);
-//        vardump($_SERVER['REQUEST_URI']);
-
-
-        //  SUPPRESSION D'UN ÉVENTUEL "/" DE FIN D'URL
-        if($_SERVER['REQUEST_URI'] !== "/")
-            $_SERVER['REQUEST_URI'] = rtrim($_SERVER['REQUEST_URI'], '/');
 
         //  CORRESPONDANCE ENTRE LA REQUETE ET UNE ROUTE DÉFINIES
-        if(array_key_exists($_SERVER['REQUEST_URI'], $this->routes)){
+        if(array_key_exists($this->uri, $this->routes)){
 
             //  LA ROUTE NÉCESSITE-ELLE DE CONTROLER LA MÉTHODE HTTP
-            if(is_array($this->routes[$_SERVER['REQUEST_URI']])){
+            if(is_array($this->routes[$this->uri])){
                 //  LA ROUTE EST-ELLE DÉFINIE POUR LA MÉTHODE HTTP DE LA REQUÊTE
-                if(array_key_exists($_SERVER["REQUEST_METHOD"], $this->routes[$_SERVER['REQUEST_URI']])){
+                if(array_key_exists($_SERVER["REQUEST_METHOD"], $this->routes[$this->uri])){
                     //  RÉCUPÉRATION DU CONTROLEUR ET DE L'ACTION ASSOCIÉE ET EXÉCUTION
-                    $ct = explode(':', $this->routes[$_SERVER['REQUEST_URI']][$_SERVER["REQUEST_METHOD"]]);
+                    $ct = explode(':', $this->routes[$this->uri][$_SERVER["REQUEST_METHOD"]]);
 //                    call_user_func("Dao\\" . $ct[0] . "::" . $ct[1]);
                 }else{
-                    $this->routage("error404");
+                    $this->invoke(array("Controllers\ViewsController", "error404"));
                 }
             //  LA ROUTE EST EN LIEN DIRECT AVEC UN CONTROLEUR SANS SE SOUCIER DE LA MÉTHODE HTTP
             }else{
                 //  RÉCUPÉRATION DU CONTROLEUR ET DE L'ACTION ASSOCIÉE ET EXÉCUTION
-                $ct = explode(':', $this->routes[$_SERVER['REQUEST_URI']]);
+                $ct = explode(':', $this->routes[$this->uri]);
             }
-//            $temp = "Controllers\\" . $ct[0];
-            $temp = $ct[0];
-            $controller = new $temp;
-            $controller->{$ct[1]}();
+            $this->invoke($ct);
         }else{
-            $this->routage("error404");
+            $this->invoke(array("Controllers\ViewsController", "error404"));
         }
     }
 
@@ -70,8 +73,6 @@ class Router
     private function getRoutesFromConfig()
     {
         $this->fileConfig = file_get_contents(ROOT."config/routing.json");
-//        vardump($this->fileConfig);
-//        vardump(json_decode($this->fileConfig,true));
         return json_decode($this->fileConfig,true);
     }
 
@@ -85,17 +86,34 @@ class Router
         $routes = array();
 //        $routes = $this->routes;
         $pUrl = explode("/", rtrim($pUrl, '/'));
-        if((int)end($pUrl) > 0):
-            $id = end($pUrl);
-        endif;
+        array_shift($pUrl);
+//        vardump($pUrl);
+        $aIntParams = [];
+        for($i = 0 ; $i < count($pUrl); $i++){
+            if((int)$pUrl[$i] > 0){
+                $aIntParams[$i] = $pUrl[$i];
+            }
+        }
+//        vardump($aIntParams);
 
         //  MODIFICATION DES ROUTES POUR QU'ELLES RESSEMBLENT À L'URI
-        if(isset($id)){
-            foreach ($this->routes as $key => $route){
-                $Key = str_replace(":id", $id, $key);
-                $routes[$Key] = $route;
+        if(!empty($aIntParams)){
+            foreach ($this->routes as $route => $controller){
+                $road = explode("/", $route);
+//                vardump($road);
+                array_shift($road);
+                if(count($road) == count($pUrl)){
+                    foreach($aIntParams as $pos => $int){
+                        if(array_key_exists($pos, $road) && $road[$pos] == ":id"){
+                            $road[$pos] = $int;
+                        }
+                    }
+                    $routes["/" . implode("/", $road)] = $controller;
+                }else{
+                    $routes[$route] = $controller;
+                }
+//                $oneRoute = explode($route);
             }
-//            vardump($routes);
             return $routes;
         }
 //            vardump($this->routes);
@@ -103,9 +121,13 @@ class Router
     }
 
     /**
-     * @param string $pCible
+     * @param array $paCible
+     * @param array|null $paGet
+     * @param array|null $paPost
      */
-    private function routage(string $pCible){
-        ViewsController::index($pCible);
+    private function invoke(array $paCible){
+        $temp = $paCible[0];
+        $controller = new $temp($_GET, $_POST, $_SERVER['REQUEST_URI']);
+        $controller->{$paCible[1]}();
     }
 }
